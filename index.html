@@ -355,8 +355,7 @@ AGENDA VIEW
           </div>
           <div class="form-group">
             <label class="form-label" id="sf-name-lbl">SEU NOME (LÍDER)</label>
-            <input class="form-input" id="sf-leader-name" placeholder="Nome...">
-          </div>
+            <input class="form-input" id="sf-leader-name" placeholder="Nome...">          </div>
         </div>
         <div id="sched-positions" class="sched-positions"></div>
         <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
@@ -413,7 +412,7 @@ AGENDA VIEW
 
 <script>
 // ══ CONFIG ════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwguvCt9MFjkPjxuI_VpVP0mqO_Q1Bo5XodbdWIteCrm9CQDpsYGsZvC13w4HisYa1A/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/library/d/1zOV2vBwM2qGzCt8L4MovBZhunspJYMaOy-BaCpMfo7Eu8nV9UeIk9292/1';
 const BACKEND_READY = true;
 
 // ══ TRANSLATIONS ══════════════════════════════════════════════
@@ -429,7 +428,7 @@ const T = {
     ],
     st:{op:'Operacional', train:'Treinando', shadow:'Sombra'},
     tag2:'+ ESTÁGIO 2', tag3:'+ ESTÁGIO 3', tag2x:'2× REVEZAMENTO',
-    opt:'OPCIONAL', ph:'Nome...', save:'✓', cancel:'✕', addBtn:'ADICIONAR', vacant:'— vago',
+    opt:'OPCIONAL', ph:'Nome...', phLeader:'Nome...', phShadow:'+ Sombra / Treino...', phVolName:'Seu nome...', phVolNotes:'Habilidades, experiência ou disponibilidade especial...', save:'✓', cancel:'✕', addBtn:'ADICIONAR', addHelper:'+ AUXILIAR', vacant:'— vago', helperSlot:'Auxiliar',
     nr1:'✦ TUDO PREENCHIDO — PRONTO PARA ESTÁGIO 0', nr2:'PRÓXIMO ESTÁGIO ADICIONA', nr3:'VAGAS A MAIS',
     nrf:'✦ PROFUNDIDADE MÁXIMA ALCANÇADA',
     hint:'CLIQUE EM + PARA ADICIONAR UMA PESSOA A QUALQUER VAGA',
@@ -482,7 +481,7 @@ const T = {
     ],
     st:{op:'Operational', train:'Training', shadow:'Shadowing'},
     tag2:'+ STAGE 2', tag3:'+ STAGE 3', tag2x:'2× ROTATION',
-    opt:'OPTIONAL', ph:'Name...', save:'✓', cancel:'✕', addBtn:'ADD', vacant:'— vacant',
+    opt:'OPTIONAL', ph:'Name...', phLeader:'Name...', phShadow:'+ Shadow / Training...', phVolName:'Your name...', phVolNotes:'Skills, experience or special availability...', save:'✓', cancel:'✕', addBtn:'ADD', addHelper:'+ ADD HELPER', vacant:'— vacant', helperSlot:'Helper',
     nr1:'✦ ALL FILLED — READY FOR STAGE 0', nr2:'NEXT STAGE ADDS', nr3:'MORE SLOTS',
     nrf:'✦ FULL DEPTH ACHIEVED',
     hint:'CLICK + TO ADD A PERSON TO ANY SLOT',
@@ -546,7 +545,7 @@ const DEPTS = [
     {id:'m-photo',s:1},{id:'m-social',s:1},
     {id:'m-photo-b',s:3,d:1},{id:'m-social-b',s:3,d:1},
   ]},
-  {id:'exp', icon:'✨', leader:{main:'Camila', aux:'Caio'}, slots:[
+  {id:'exp', icon:'✨', leader:{main:'Camila', aux:'Caio'}, dynamicHelpers:true, slots:[
     {id:'e-stage',s:1},{id:'e-setup',s:1},
     {id:'e-stage-b',s:3,d:1},{id:'e-setup-b',s:3,d:1},
   ]},
@@ -682,6 +681,92 @@ function allReqSlots(stg) {
   }, []);
 }
 
+// ══ SLOT CARD RENDERER ═══════════════════════════════════════
+function renderSlotCard(container, slotId, dept, wd, t, isHelper) {
+  var people = wd[slotId] || [];
+  var sl = dept.slots ? dept.slots.find(function(s) { return s.id === slotId; }) : null;
+  var optional = isHelper || (sl ? isOptSlot(sl, dept) : false);
+  var hasPpl = people.length > 0;
+  var si = t.slots[slotId] || [isHelper ? t.helperSlot : slotId, ''];
+
+  var stageTag = '';
+  if (sl && sl.s === 2 && stage >= 2 && !sl.bonus) stageTag = '<span class="stag st2">' + t.tag2 + '</span>';
+  if (sl && sl.s === 3 && stage === 3) stageTag = sl.d ? '<span class="stag st3">' + t.tag2x + '</span>' : '<span class="stag st3">' + t.tag3 + '</span>';
+
+  var peopleHtml = '';
+  if (people.length) {
+    peopleHtml = '<div class="people">';
+    people.forEach(function(p, i) {
+      var sc = p.status==='op'?'op':p.status==='train'?'tr':'sh';
+      peopleHtml += '<div class="person-row">' +
+        '<div class="pdot pdot-' + sc + '"></div>' +
+        '<span class="pname pname-' + sc + '">' + p.name + '</span>' +
+        '<button class="p-del" onclick="delPerson(\'' + slotId + '\',' + i + ',event)">✕</button>' +
+        '</div>';
+    });
+    peopleHtml += '</div>';
+  } else {
+    peopleHtml = '<div class="vacant-lbl">' + t.vacant + '</div>';
+  }
+
+  var selOp = pendSt[slotId]==='op' ? 's-op' : '';
+  var selTr = pendSt[slotId]==='train' ? 's-tr' : '';
+  var selSh = pendSt[slotId]==='shadow' ? 's-sh' : '';
+  var formOpen = openForm === slotId ? 'open' : '';
+
+  var el = document.createElement('div');
+  el.className = 'slot' + (optional ? (' opt' + (hasPpl ? ' has-people' : '')) : '');
+  el.id = 'slot-' + slotId;
+
+  el.innerHTML =
+    '<div><div class="slot-ttl">' + si[0] + '</div>' + (si[1] ? '<div class="slot-sub">' + si[1] + '</div>' : '') + '</div>' +
+    (optional && !dept.deptBonus && !isHelper ? '<span class="opt-badge">' + t.opt + '</span>' : '') +
+    stageTag +
+    peopleHtml +
+    '<button class="add-btn" onclick="openAddForm(\'' + slotId + '\',event)">' +
+      '<span class="plus">+</span><span>' + t.addBtn + '</span>' +
+    '</button>' +
+    (isHelper ? '<button class="add-btn" style="color:#444;margin-top:0" onclick="removeHelper(\'' + slotId + '\',event)"><span style="font-size:10px">✕ REMOVER</span></button>' : '') +
+    '<div class="add-form ' + formOpen + '" id="af-' + slotId + '" onclick="event.stopPropagation()">' +
+      '<input class="af-inp" id="inp-' + slotId + '" placeholder="' + t.ph + '">' +
+      '<div class="af-row">' +
+        '<div class="sbtn-wrap">' +
+          '<button class="sbtn ' + selOp + '" onclick="selStatus(\'' + slotId + '\',\'op\')">🟢</button>' +
+          '<button class="sbtn ' + selTr + '" onclick="selStatus(\'' + slotId + '\',\'train\')">🟡</button>' +
+          '<button class="sbtn ' + selSh + '" onclick="selStatus(\'' + slotId + '\',\'shadow\')">🔵</button>' +
+        '</div>' +
+        '<div class="af-actions">' +
+          '<button class="btn-cancel" onclick="closeForm(\'' + slotId + '\')">' + t.cancel + '</button>' +
+          '<button class="btn-save" onclick="savePerson(\'' + slotId + '\')">' + t.save + '</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  container.appendChild(el);
+}
+
+function addDynamicHelper(e) {
+  if (e) e.stopPropagation();
+  var wd = data[currentWeek] || {};
+  var existing = Object.keys(wd).filter(function(k) { return k.indexOf('e-helper-') === 0; });
+  var newId = 'e-helper-' + existing.length;
+  // Initialize as empty slot so it renders
+  if (!data[currentWeek]) data[currentWeek] = {};
+  data[currentWeek][newId] = [];
+  persist();
+  renderDashboard();
+  // Auto-open the add form for the new helper
+  setTimeout(function() { openAddForm(newId, null); }, 50);
+}
+
+function removeHelper(slotId, e) {
+  if (e) e.stopPropagation();
+  if (!data[currentWeek]) return;
+  delete data[currentWeek][slotId];
+  persist();
+  renderDashboard();
+}
+
 // ══ RENDER DASHBOARD ═════════════════════════════════════════
 function renderDashboard() {
   var t = T[lang];
@@ -768,68 +853,22 @@ function renderDashboard() {
     main.appendChild(de);
 
     var re = document.getElementById('r-' + dept.id);
-    slots.forEach(function(sl) {
-      var people = wd[sl.id] || [];
-      var optional = isOptSlot(sl, dept);
-      var hasPpl = people.length > 0;
-      var si = t.slots[sl.id] || [sl.id, ''];
+    slots.forEach(function(sl) { renderSlotCard(re, sl.id, dept, wd, t, false); });
 
-      var stageTag = '';
-      if (sl.s === 2 && stage >= 2 && !sl.bonus) stageTag = '<span class="stag st2">' + t.tag2 + '</span>';
-      if (sl.s === 3 && stage === 3) stageTag = sl.d ? '<span class="stag st3">' + t.tag2x + '</span>' : '<span class="stag st3">' + t.tag3 + '</span>';
-
-      var peopleHtml = '';
-      if (people.length) {
-        peopleHtml = '<div class="people">';
-        people.forEach(function(p, i) {
-          var sc = p.status==='op'?'op':p.status==='train'?'tr':'sh';
-          var color = p.status==='op'?'#22c55e':p.status==='train'?'#f59e0b':'#60a5fa';
-          peopleHtml += '<div class="person-row">' +
-            '<div class="pdot pdot-' + sc + '"></div>' +
-            '<span class="pname pname-' + sc + '">' + p.name + '</span>' +
-            '<button class="p-del" onclick="delPerson(\'' + sl.id + '\',' + i + ',event)">✕</button>' +
-            '</div>';
-        });
-        peopleHtml += '</div>';
-      } else {
-        peopleHtml = '<div class="vacant-lbl">' + t.vacant + '</div>';
-      }
-
-      var selOp = pendSt[sl.id]==='op' ? 's-op' : '';
-      var selTr = pendSt[sl.id]==='train' ? 's-tr' : '';
-      var selSh = pendSt[sl.id]==='shadow' ? 's-sh' : '';
-      var formOpen = openForm === sl.id ? 'open' : '';
-
-      var el = document.createElement('div');
-      // Key fix: NO animation class, NO opacity class — use .opt and .has-people for color treatment only
-      el.className = 'slot' + (optional ? (' opt' + (hasPpl ? ' has-people' : '')) : '');
-      el.id = 'slot-' + sl.id;
-
-      el.innerHTML =
-        '<div><div class="slot-ttl">' + si[0] + '</div>' + (si[1] ? '<div class="slot-sub">' + si[1] + '</div>' : '') + '</div>' +
-        (optional && !dept.deptBonus ? '<span class="opt-badge">' + t.opt + '</span>' : '') +
-        stageTag +
-        peopleHtml +
-        '<button class="add-btn" onclick="openAddForm(\'' + sl.id + '\',event)">' +
-          '<span class="plus">+</span><span>' + t.addBtn + '</span>' +
-        '</button>' +
-        '<div class="add-form ' + formOpen + '" id="af-' + sl.id + '" onclick="event.stopPropagation()">' +
-          '<input class="af-inp" id="inp-' + sl.id + '" placeholder="' + t.ph + '">' +
-          '<div class="af-row">' +
-            '<div class="sbtn-wrap">' +
-              '<button class="sbtn ' + selOp + '" onclick="selStatus(\'' + sl.id + '\',\'op\')">🟢</button>' +
-              '<button class="sbtn ' + selTr + '" onclick="selStatus(\'' + sl.id + '\',\'train\')">🟡</button>' +
-              '<button class="sbtn ' + selSh + '" onclick="selStatus(\'' + sl.id + '\',\'shadow\')">🔵</button>' +
-            '</div>' +
-            '<div class="af-actions">' +
-              '<button class="btn-cancel" onclick="closeForm(\'' + sl.id + '\')">' + t.cancel + '</button>' +
-              '<button class="btn-save" onclick="savePerson(\'' + sl.id + '\')">' + t.save + '</button>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
-
-      re.appendChild(el);
-    });
+    if (dept.dynamicHelpers) {
+      var helperKeys = Object.keys(wd).filter(function(k) { return k.indexOf('e-helper-') === 0; });
+      helperKeys.sort();
+      helperKeys.forEach(function(hid) { renderSlotCard(re, hid, dept, wd, t, true); });
+      var addHelperCell = document.createElement('div');
+      addHelperCell.className = 'slot';
+      addHelperCell.style.justifyContent = 'center';
+      addHelperCell.innerHTML =
+        '<button class="add-btn" style="justify-content:center;width:100%;color:#3a3a3a;border:1px dashed #2a2a2a;border-radius:4px;padding:8px" onclick="addDynamicHelper(event)">' +
+          '<span class="plus" style="border-color:#2a2a2a;color:#3a3a3a">+</span>' +
+          '<span>' + t.addHelper + '</span>' +
+        '</button>';
+      re.appendChild(addHelperCell);
+    }
   });
 
   var filled = tot - cva;
@@ -873,6 +912,9 @@ function renderAgenda() {
   document.getElementById('vf-notes-lbl').textContent = t.vfNotesLbl;
   document.getElementById('vf-submit-btn').textContent = t.vfSubmit;
   document.getElementById('mini-dash-title').textContent = t.miniDashTitle;
+  document.getElementById('sf-leader-name').placeholder = t.phLeader;
+  document.getElementById('vf-name').placeholder = t.phVolName;
+  document.getElementById('vf-notes').placeholder = t.phVolNotes;
 
   var areaEl = document.getElementById('sf-area');
   areaEl.innerHTML = '';
@@ -932,7 +974,7 @@ function buildSchedPositions() {
         '<button class="ssbtn ' + selTr + '" onclick="setSchedStatus(\'' + sl.id + '\',\'primary\',\'train\',event)">🟡</button>' +
         '<button class="ssbtn ' + selSh + '" onclick="setSchedStatus(\'' + sl.id + '\',\'primary\',\'shadow\',event)">🔵</button>' +
       '</div>' +
-      '<input class="sched-pos-input" placeholder="+ Sombra / Treino..." id="sp-' + sl.id + '-sh" value="' + existShName + '" style="opacity:0.5" oninput="schedFormData[\'' + sl.id + '\'].secondary.name=this.value">' +
+      '<input class="sched-pos-input" placeholder="' + t.phShadow + '" id="sp-' + sl.id + '-sh" value="' + existShName + '" style="opacity:0.5" oninput="schedFormData[\'' + sl.id + '\'].secondary.name=this.value">' +
       '<div class="sched-status-btns" id="spst-' + sl.id + '-sh">' +
         '<button class="ssbtn ' + selShTr + '" onclick="setSchedStatus(\'' + sl.id + '\',\'secondary\',\'train\',event)">🟡</button>' +
         '<button class="ssbtn ' + selShSh + '" onclick="setSchedStatus(\'' + sl.id + '\',\'secondary\',\'shadow\',event)">🔵</button>' +
