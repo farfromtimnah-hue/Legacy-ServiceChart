@@ -645,13 +645,15 @@ function setSyncState(s) {
 }
 function pushToBackend() {
   setSyncState('syncing');
-  // Apps Script requires no-cors mode — send data as URL parameter via GET for reads,
-  // and use a form-encoded POST with no-cors for writes to bypass preflight blocking
-  var form = new FormData();
-  form.append('payload', JSON.stringify({action:'saveRoster', data:data}));
-  fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', body:form})
-    .then(function() { setSyncState('synced'); })
-    .catch(function() { setSyncState('error'); });
+  var payload = JSON.stringify({action:'saveRoster', data:data});
+  fetch(SCRIPT_URL, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:'payload=' + encodeURIComponent(payload)
+  })
+  .then(function() { setSyncState('synced'); })
+  .catch(function() { setSyncState('error'); });
 }
 
 var SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vROQvydrz2cZLhjyvR3lNehvNLKdBP1xwoCp5HCuJKh8Ma_y44k9zqYWCqYmbwaZi6WTpu1HJM_4Fh3/pub?gid=595093327&single=true&output=csv';
@@ -1181,6 +1183,7 @@ function setLang(l) {
   populateDatePickers();
   renderDashboard();
   if (currentView === 'agenda') renderAgenda();
+  if (window._syncState) setSyncState(window._syncState);
 }
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && openForm) savePerson(openForm);
