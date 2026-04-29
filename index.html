@@ -590,8 +590,15 @@ function pullFromBackend() {
         if (cols[0] && cols[0].trim() === 'FULL_ROSTER') { lastRow = cols; break; }
       }
       if (lastRow && lastRow[1]) {
-        try { data = JSON.parse(lastRow[1]); localStorage.setItem('legacy_v5',JSON.stringify(data)); }
-        catch(e) { loadLocal(); }
+        try {
+          // Google Sheets sometimes double-encodes quotes — clean before parsing
+          var raw = lastRow[1].trim().replace(/""/g, '"');
+          if (raw.charAt(0) === '"') raw = raw.substring(1);
+          if (raw.charAt(raw.length-1) === '"') raw = raw.substring(0,raw.length-1);
+          raw = raw.replace(/""/g, '"');
+          data = JSON.parse(raw);
+          localStorage.setItem('legacy_v5',JSON.stringify(data));
+        } catch(e) { loadLocal(); }
       } else { loadLocal(); }
       setSyncState('synced');
       renderDashboard();
