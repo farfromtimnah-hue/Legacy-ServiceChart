@@ -309,7 +309,7 @@ AGENDA VIEW
   <div class="prog-bar">
     <div>
       <div class="stg-ttl c1" id="s-ttl">ESTÁGIO 01 — ESSENCIAL</div>
-      <div class="stg-dsc" id="s-dsc">Todas as posições essenciais cobertas. O serviço pode acontecer.</div>
+      <div class="stg-dsc" id="s-dsc">Todas as posições essenciais cobertas. O culto pode acontecer.</div>
     </div>
     <div class="prog-r">
       <div class="prog-track"><div class="prog-fill pf1" id="pfill" style="width:0%"></div></div>
@@ -412,7 +412,7 @@ const T = {
     lop:'Operacional', ltr:'Treinando', lsh:'Sombra', lva:'Vago',
     t1s:'ESTÁGIO 01', t1n:'ESSENCIAL', t2s:'ESTÁGIO 02', t2n:'COMPLETO', t3s:'ESTÁGIO 03', t3n:'PROFUNDIDADE',
     stg:[
-      {t:'ESTÁGIO 01 — ESSENCIAL', d:'Todas as posições essenciais cobertas. O serviço pode acontecer.'},
+      {t:'ESTÁGIO 01 — ESSENCIAL', d:'Todas as posições essenciais cobertas. O culto pode acontecer.'},
       {t:'ESTÁGIO 02 — COMPLETO', d:'Todas as posições possíveis preenchidas.'},
       {t:'ESTÁGIO 03 — PROFUNDIDADE', d:'Posições-chave com revezamento 2×/mês. Ninguém se esgota.'},
     ],
@@ -569,7 +569,15 @@ let schedFormData = {};
 // ══ DATE HELPERS ═════════════════════════════════════════════
 function getThisFriday() {
   var d = new Date();
-  var diff = (5 - d.getDay() + 7) % 7;
+  var day = d.getDay(); // 0=Sun, 1=Mon, ... 5=Fri, 6=Sat
+  var diff;
+  if (day === 6) {
+    // Saturday — still show this week's Friday (yesterday)
+    diff = -1;
+  } else {
+    // Sun(0) through Fri(5) — find the Friday of this week
+    diff = 5 - day;
+  }
   d.setDate(d.getDate() + diff);
   return d.toISOString().split('T')[0];
 }
@@ -580,7 +588,8 @@ function keyToDisplay(k) {
 function buildFridayList() {
   var fridays = [];
   var today = new Date();
-  var diff = (5 - today.getDay() + 7) % 7;
+  var day = today.getDay();
+  var diff = day === 6 ? -1 : 5 - day;
   var thisFri = new Date(today);
   thisFri.setDate(today.getDate() + diff);
   for (var i = -4; i <= 11; i++) {
