@@ -242,7 +242,8 @@ AGENDA VIEW
 .vol-form-hdr { padding:14px 20px; border-bottom:1px solid #252525; background:rgba(0,0,0,0.3); }
 .vol-form-title { font-family:‘Bebas Neue’,sans-serif; font-size:16px; letter-spacing:2px; color:#f0f0f0; }
 .vol-form-sub { font-family:‘Space Mono’,monospace; font-size:10px; color:#5a5a5a; letter-spacing:1px; margin-top:3px; }
-.vol-form-body { padding:20px; display:flex; flex-direction:column; gap:14px; }
+.vol-form-embed { background:#f8f8f8; border-radius:0 0 8px 8px; overflow:hidden; }
+.vol-form-embed iframe { display:block; width:100%; min-height:1205px; border:none; filter:invert(0.92) hue-rotate(180deg) brightness(0.88) saturate(1.1); }
 .areas-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:8px; }
 .area-check { display:flex; align-items:center; gap:8px; cursor:pointer; }
 .area-check input { accent-color:#C8214A; width:14px; height:14px; cursor:pointer; }
@@ -380,31 +381,19 @@ AGENDA VIEW
     <div class="vol-form-card">
       <div class="vol-form-hdr">
         <div class="vol-form-title" id="vf-title">QUERO SERVIR</div>
-        <div class="vol-form-sub" id="vf-sub">Preencha seus dados e as áreas de interesse</div>
+        <div class="vol-form-sub" id="vf-sub">Preencha seus dados e as áreas de interesse · Fill in your details and areas of interest</div>
       </div>
-      <div class="vol-form-body">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" id="vf-name-lbl">NOME COMPLETO</label>
-            <input class="form-input" id="vf-name" placeholder="Seu nome...">
-          </div>
-          <div class="form-group">
-            <label class="form-label" id="vf-phone-lbl">TELEFONE / WHATSAPP</label>
-            <input class="form-input" id="vf-phone" placeholder="(000) 000-0000">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" id="vf-areas-lbl">ÁREAS DE INTERESSE</label>
-          <div class="areas-grid" id="areas-grid"></div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" id="vf-notes-lbl">OBSERVAÇÕES</label>
-          <input class="form-input" id="vf-notes" placeholder="Habilidades, experiência ou disponibilidade especial...">
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <button class="sched-submit" onclick="submitVolunteer()" id="vf-submit-btn">ENVIAR</button>
-          <span class="submit-status" id="vol-status"></span>
-        </div>
+      <div class="vol-form-embed">
+        <iframe
+          src="https://docs.google.com/forms/d/e/1FAIpQLSeMEwPYpkkUBVZA7WpnuGSe656unGjEc-TJthbSqpbrgX_uQg/viewform?embedded=true&dark=true"
+          width="100%"
+          height="1205"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0"
+          style="border:none;display:block;filter:invert(0.92) hue-rotate(180deg) brightness(0.85) saturate(1.2);">
+          Loading...
+        </iframe>
       </div>
     </div>
   </div>
@@ -412,7 +401,7 @@ AGENDA VIEW
 
 <script>
 // ══ CONFIG ════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwguvCt9MFjkPjxuI_VpVP0mqO_Q1Bo5XodbdWIteCrm9CQDpsYGsZvC13w4HisYa1A/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFake_ReplaceWithYours/exec';
 const BACKEND_READY = true;
 
 // ══ TRANSLATIONS ══════════════════════════════════════════════
@@ -666,10 +655,13 @@ function pushToBackend() {
 function pullFromBackend() {
   if (!BACKEND_READY) { loadLocal(); renderDashboard(); return; }
   setSyncState('syncing');
-  fetch(SCRIPT_URL + '?action=getRoster', {mode:'no-cors'})
+  fetch(SCRIPT_URL + '?action=getRoster')
     .then(function(r) { return r.json(); })
     .then(function(json) {
-      if (json && json.data) { data = json.data; }
+      if (json && json.data) {
+        data = json.data;
+        localStorage.setItem('legacy_v5', JSON.stringify(data));
+      }
       setSyncState('synced');
       renderDashboard();
     })
@@ -927,16 +919,9 @@ function renderAgenda() {
   document.getElementById('sched-submit-btn').textContent = t.sfSubmit;
   document.getElementById('ag-vol-divider').textContent = t.agVolDiv;
   document.getElementById('vf-title').textContent = t.vfTitle;
-  document.getElementById('vf-sub').textContent = t.vfSub;
-  document.getElementById('vf-name-lbl').textContent = t.vfNameLbl;
-  document.getElementById('vf-phone-lbl').textContent = t.vfPhoneLbl;
-  document.getElementById('vf-areas-lbl').textContent = t.vfAreasLbl;
-  document.getElementById('vf-notes-lbl').textContent = t.vfNotesLbl;
-  document.getElementById('vf-submit-btn').textContent = t.vfSubmit;
+  document.getElementById('vf-sub').textContent = 'Preencha seus dados e as áreas de interesse · Fill in your details and areas of interest';
   document.getElementById('mini-dash-title').textContent = t.miniDashTitle;
   document.getElementById('sf-leader-name').placeholder = t.phLeader;
-  document.getElementById('vf-name').placeholder = t.phVolName;
-  document.getElementById('vf-notes').placeholder = t.phVolNotes;
 
   var areaEl = document.getElementById('sf-area');
   areaEl.innerHTML = '';
@@ -1081,37 +1066,7 @@ function renderMiniDash() {
   });
 }
 
-function submitVolunteer() {
-  var t = T[lang];
-  var name = document.getElementById('vf-name') ? document.getElementById('vf-name').value.trim() : '';
-  var phone = document.getElementById('vf-phone') ? document.getElementById('vf-phone').value.trim() : '';
-  var notes = document.getElementById('vf-notes') ? document.getElementById('vf-notes').value.trim() : '';
-  var areas = Array.from(document.querySelectorAll('#areas-grid input:checked')).map(function(c){return c.value;});
-  var statusEl = document.getElementById('vol-status');
-  if (!name) { statusEl.className='submit-status err'; statusEl.textContent='Nome obrigatório'; return; }
-  var payload = {action:'saveVolunteer', timestamp:new Date().toISOString(), name:name, phone:phone, areas:areas.join(', '), notes:notes};
-  if (BACKEND_READY) {
-    statusEl.className='submit-status saving'; statusEl.textContent=t.vfSaving;
-    var form = new FormData();
-    form.append('payload', JSON.stringify(payload));
-    fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', body:form})
-      .then(function(){
-        statusEl.className='submit-status ok'; statusEl.textContent=t.vfOk;
-        document.getElementById('vf-name').value=''; document.getElementById('vf-phone').value='';
-        document.getElementById('vf-notes').value='';
-        document.querySelectorAll('#areas-grid input').forEach(function(c){c.checked=false;});
-      }).catch(function(){ statusEl.className='submit-status err'; statusEl.textContent=t.vfErr; });
-  } else {
-    var vols = JSON.parse(localStorage.getItem('legacy_volunteers')||'[]');
-    vols.push(payload);
-    localStorage.setItem('legacy_volunteers', JSON.stringify(vols));
-    statusEl.className='submit-status ok'; statusEl.textContent=t.vfOk+' (local)';
-    document.getElementById('vf-name').value=''; document.getElementById('vf-phone').value='';
-    document.getElementById('vf-notes').value='';
-    document.querySelectorAll('#areas-grid input').forEach(function(c){c.checked=false;});
-  }
-  setTimeout(function(){statusEl.textContent='';},3000);
-}
+// volunteer form now handled by embedded Google Form
 
 // ══ SLOT INTERACTIONS ════════════════════════════════════════
 function openAddForm(slotId, e) {
