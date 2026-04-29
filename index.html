@@ -10,7 +10,7 @@
   :root {
     --crimson:#C8214A; --orange:#E87D1A; --chartreuse:#C8E84A; --chartreuse-dim:#9db535;
     --dark:#0d0d0d; --dark-card:#161616; --dark-border:#252525; --dark-hover:#1c1c1c;
-    --text-primary:#f0f0f0; --text-muted:#5a5a5a; --text-dim:#2e2e2e;
+    --text-primary:#f0f0f0; --text-muted:#888888; --text-dim:#555555;
     --op:#22c55e; --op-bg:rgba(34,197,94,0.1);
     --tr:#f59e0b; --tr-bg:rgba(245,158,11,0.1);
     --sh:#60a5fa; --sh-bg:rgba(96,165,250,0.1);
@@ -104,10 +104,10 @@
 .dept-meta { margin-left:auto; display:flex; gap:10px; align-items:center; }
 .dstat { display:flex; align-items:center; gap:4px; font-family:‘Space Mono’,monospace; font-size:10px; color:#5a5a5a; }
 .ddot { width:6px; height:6px; border-radius:50%; display:inline-block; }
-.dept-leader { font-family:‘Space Mono’,monospace; font-size:10px; color:#3a3a3a; letter-spacing:0.5px; margin-top:5px; padding-left:1px; display:flex; align-items:center; gap:6px; }
-.leader-icon { font-size:9px; opacity:0.5; color:#3a3a3a; }
-.leader-name { color:#4a4a4a; }
-.leader-aux { color:#333; }
+.dept-leader { font-family:‘Space Mono’,monospace; font-size:10px; color:#666; letter-spacing:0.5px; margin-top:5px; padding-left:1px; display:flex; align-items:center; gap:6px; }
+.leader-icon { font-size:9px; opacity:0.6; color:#666; }
+.leader-name { color:#777; }
+.leader-aux { color:#555; }
 
 /* BONUS DEPT — dimmed but never invisible */
 .dept.bonus-dept { border-color:#1e1e1e; }
@@ -127,12 +127,12 @@
 .slot-sub { font-size:10px; color:#5a5a5a; font-style:italic; margin-top:1px; }
 
 /* OPTIONAL SLOT — muted style, NOT opacity-based (GitHub Pages safe) */
-.slot.opt .slot-ttl { color:#333; }
-.slot.opt .slot-sub { color:#2a2a2a; }
-.slot.opt .vacant-lbl { color:#222; }
-.slot.opt .add-btn { color:#2a2a2a; }
-.slot.opt .add-btn .plus { border-color:#222; color:#2a2a2a; }
-.opt-badge { font-family:‘Space Mono’,monospace; font-size:9px; letter-spacing:1px; color:#2e2e2e; border:1px dashed #222; border-radius:2px; padding:1px 6px; display:inline-block; margin-top:2px; }
+.slot.opt .slot-ttl { color:#555; }
+.slot.opt .slot-sub { color:#444; }
+.slot.opt .vacant-lbl { color:#444; }
+.slot.opt .add-btn { color:#444; }
+.slot.opt .add-btn .plus { border-color:#3a3a3a; color:#444; }
+.opt-badge { font-family:‘Space Mono’,monospace; font-size:9px; letter-spacing:1px; color:#555; border:1px dashed #444; border-radius:2px; padding:1px 6px; display:inline-block; margin-top:2px; }
 
 /* OPTIONAL SLOT — lit up when has people */
 .slot.opt.has-people .slot-ttl { color:#f0f0f0; }
@@ -150,9 +150,9 @@
 .pdot-sh { background:#60a5fa; box-shadow:0 0 6px #60a5fa; }
 .pname { font-family:‘Space Mono’,monospace; font-size:11px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .pname-op { color:#22c55e; } .pname-tr { color:#f59e0b; } .pname-sh { color:#60a5fa; }
-.p-del { background:transparent; border:none; color:#2e2e2e; cursor:pointer; font-size:11px; padding:0 2px; line-height:1; flex-shrink:0; }
-.p-del:hover { color:#777; }
-.vacant-lbl { font-family:‘Space Mono’,monospace; font-size:10px; color:#2e2e2e; margin-top:2px; }
+.p-del { background:transparent; border:none; color:#555; cursor:pointer; font-size:11px; padding:0 2px; line-height:1; flex-shrink:0; }
+.p-del:hover { color:#aaa; }
+.vacant-lbl { font-family:‘Space Mono’,monospace; font-size:10px; color:#666; margin-top:2px; }
 
 /* ADD BUTTON */
 .add-btn { display:flex; align-items:center; gap:5px; margin-top:6px; padding:5px 0; background:transparent; border:none; cursor:pointer; font-family:‘Space Mono’,monospace; font-size:10px; color:#5a5a5a; letter-spacing:1px; }
@@ -165,7 +165,7 @@
 .add-form.open { display:flex; }
 .af-inp { background:#0a0a0a; border:1px solid #252525; border-radius:3px; padding:5px 9px; font-family:‘Space Mono’,monospace; font-size:11px; color:#f0f0f0; outline:none; width:100%; }
 .af-inp:focus { border-color:#C8214A; }
-.af-inp::placeholder { color:#2e2e2e; }
+.af-inp::placeholder { color:#555; }
 .af-row { display:flex; gap:5px; align-items:center; justify-content:space-between; }
 .sbtn-wrap { display:flex; gap:4px; }
 .sbtn { width:26px; height:26px; border-radius:3px; border:1px solid #252525; background:transparent; cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; }
@@ -213,6 +213,7 @@ AGENDA VIEW
 .sched-pos-title { font-family:‘DM Sans’,sans-serif; font-size:12px; font-weight:700; min-width:160px; flex-shrink:0; color:#f0f0f0; }
 .sched-pos-input { background:#0a0a0a; border:1px solid #252525; border-radius:3px; color:#f0f0f0; font-family:‘Space Mono’,monospace; font-size:11px; padding:5px 9px; outline:none; flex:1; min-width:120px; }
 .sched-pos-input:focus { border-color:#C8214A; }
+.sched-pos-input::placeholder { color:#555; }
 .sched-pos-input::placeholder { color:#2e2e2e; }
 .sched-status-btns { display:flex; gap:3px; flex-shrink:0; }
 .ssbtn { width:24px; height:24px; border-radius:3px; border:1px solid #252525; background:transparent; cursor:pointer; font-size:11px; display:flex; align-items:center; justify-content:center; }
@@ -236,7 +237,7 @@ AGENDA VIEW
 .mini-people { margin-top:4px; display:flex; flex-direction:column; gap:3px; }
 .mini-person { display:flex; align-items:center; gap:5px; font-family:‘Space Mono’,monospace; font-size:10px; }
 .mini-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; display:inline-block; }
-.vacant-mini { font-family:‘Space Mono’,monospace; font-size:10px; color:#2e2e2e; margin-top:3px; }
+.vacant-mini { font-family:‘Space Mono’,monospace; font-size:10px; color:#666; margin-top:3px; }
 
 .vol-form-card { background:#161616; border:1px solid #252525; border-radius:8px; overflow:hidden; }
 .vol-form-hdr { padding:14px 20px; border-bottom:1px solid #252525; background:rgba(0,0,0,0.3); }
@@ -534,8 +535,8 @@ const DEPTS = [
     {id:'m-photo',s:1},{id:'m-social',s:1},
     {id:'m-photo-b',s:3,d:1},{id:'m-social-b',s:3,d:1},
   ]},
-  {id:'exp', icon:'✨', leader:{main:'Camila', aux:'Caio'}, dynamicHelpers:true, slots:[
-    {id:'e-stage',s:1},{id:'e-setup',s:1},
+  {id:'exp', icon:'✨', leader:{main:'Camila', aux:'Caio'}, slots:[
+    {id:'e-stage',s:1,dynamicHelpers:true},{id:'e-setup',s:1,dynamicHelpers:true},
     {id:'e-stage-b',s:3,d:1},{id:'e-setup-b',s:3,d:1},
   ]},
   {id:'hosp', icon:'☕', leader:{main:'Estevão & Rayara', aux:'Caio'}, slots:[
@@ -548,7 +549,7 @@ const DEPTS = [
     {id:'i-interc1',s:1},{id:'i-interc2',s:1,bonus:true},
   ]},
   {id:'trad', icon:'🌐', leader:{main:'Lissa', aux:null}, slots:[
-    {id:'tr-trad',s:1},
+    {id:'tr-trad',s:1,maxPeople:2},
   ]},
   {id:'kids', icon:'🧒', leader:{main:'Iasmin', aux:'Isabela Braga'}, deptBonus:true, slots:[
     {id:'k-vol1',s:1},{id:'k-vol2',s:1},{id:'k-vol3',s:1,bonus:true},
@@ -644,16 +645,10 @@ function setSyncState(s) {
   window._syncState = s;
 }
 function pushToBackend() {
-  setSyncState('syncing');
-  var payload = JSON.stringify({action:'saveRoster', data:data});
-  fetch(SCRIPT_URL, {
-    method:'POST',
-    mode:'no-cors',
-    headers:{'Content-Type':'application/x-www-form-urlencoded'},
-    body:'payload=' + encodeURIComponent(payload)
-  })
-  .then(function() { setSyncState('synced'); })
-  .catch(function() { setSyncState('error'); });
+  var payload = encodeURIComponent(JSON.stringify({action:'saveRoster', data:data}));
+  fetch(SCRIPT_URL + '?method=post&payload=' + payload)
+    .then(function() { setSyncState('synced'); })
+    .catch(function() { setSyncState('error'); });
 }
 
 var SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vROQvydrz2cZLhjyvR3lNehvNLKdBP1xwoCp5HCuJKh8Ma_y44k9zqYWCqYmbwaZi6WTpu1HJM_4Fh3/pub?gid=595093327&single=true&output=csv';
@@ -741,12 +736,17 @@ function allReqSlots(stg) {
 }
 
 // ══ SLOT CARD RENDERER ═══════════════════════════════════════
-function renderSlotCard(container, slotId, dept, wd, t, isHelper) {
+function renderSlotCard(container, slotId, dept, wd, t, isHelper, parentSlotId) {
   var people = wd[slotId] || [];
   var sl = dept.slots ? dept.slots.find(function(s) { return s.id === slotId; }) : null;
+  // For helpers, find parent slot for maxPeople check
+  var parentSl = parentSlotId ? dept.slots.find(function(s) { return s.id === parentSlotId; }) : sl;
   var optional = isHelper || (sl ? isOptSlot(sl, dept) : false);
   var hasPpl = people.length > 0;
   var si = t.slots[slotId] || [isHelper ? t.helperSlot : slotId, ''];
+  // maxPeople cap (for trad: max 2, others unlimited)
+  var maxPpl = sl && sl.maxPeople ? sl.maxPeople : 999;
+  var atCap = people.length >= maxPpl;
 
   var stageTag = '';
   if (sl && sl.s === 2 && stage >= 2 && !sl.bonus) stageTag = '<span class="stag st2">' + t.tag2 + '</span>';
@@ -782,8 +782,8 @@ function renderSlotCard(container, slotId, dept, wd, t, isHelper) {
     (optional && !dept.deptBonus && !isHelper ? '<span class="opt-badge">' + t.opt + '</span>' : '') +
     stageTag +
     peopleHtml +
-    '<button class="add-btn" onclick="openAddForm(\'' + slotId + '\',event)">' +
-      '<span class="plus">+</span><span>' + t.addBtn + '</span>' +
+    '<button class="add-btn" onclick="openAddForm(\'' + slotId + '\',event)" ' + (atCap ? 'style="opacity:0.3;pointer-events:none"' : '') + '>' +
+      '<span class="plus">+</span><span>' + (atCap ? (lang==='pt'?'COMPLETO':'FULL') : t.addBtn) + '</span>' +
     '</button>' +
     (isHelper ? '<button class="add-btn" style="color:#444;margin-top:0" onclick="removeHelper(\'' + slotId + '\',event)"><span style="font-size:10px">✕ REMOVER</span></button>' : '') +
     '<div class="add-form ' + formOpen + '" id="af-' + slotId + '" onclick="event.stopPropagation()">' +
@@ -804,17 +804,15 @@ function renderSlotCard(container, slotId, dept, wd, t, isHelper) {
   container.appendChild(el);
 }
 
-function addDynamicHelper(e) {
+function addDynamicHelper(slotId, e) {
   if (e) e.stopPropagation();
-  var wd = data[currentWeek] || {};
-  var existing = Object.keys(wd).filter(function(k) { return k.indexOf('e-helper-') === 0; });
-  var newId = 'e-helper-' + existing.length;
-  // Initialize as empty slot so it renders
   if (!data[currentWeek]) data[currentWeek] = {};
+  var prefix = slotId + '-helper-';
+  var existing = Object.keys(data[currentWeek]).filter(function(k) { return k.indexOf(prefix) === 0; });
+  var newId = prefix + existing.length;
   data[currentWeek][newId] = [];
   persist();
   renderDashboard();
-  // Auto-open the add form for the new helper
   setTimeout(function() { openAddForm(newId, null); }, 50);
 }
 
@@ -912,24 +910,33 @@ function renderDashboard() {
     main.appendChild(de);
 
     var re = document.getElementById('r-' + dept.id);
-    slots.forEach(function(sl) { renderSlotCard(re, sl.id, dept, wd, t, false); });
+    slots.forEach(function(sl) {
+      renderSlotCard(re, sl.id, dept, wd, t, false);
+      // Per-slot dynamic helpers
+      if (sl.dynamicHelpers) {
+        var prefix = sl.id + '-helper-';
+        var helperKeys = Object.keys(wd).filter(function(k) { return k.indexOf(prefix) === 0; });
+        helperKeys.sort();
+        helperKeys.forEach(function(hid) { renderSlotCard(re, hid, dept, wd, t, true, sl.id); });
+        var addHelperCell = document.createElement('div');
+        addHelperCell.className = 'slot';
+        addHelperCell.innerHTML =
+          '<button class="add-btn" style="justify-content:center;width:100%;color:#3a3a3a;border:1px dashed #2a2a2a;border-radius:4px;padding:8px" onclick="addDynamicHelper(\'' + sl.id + '\',event)">' +
+            '<span class="plus" style="border-color:#2a2a2a;color:#3a3a3a">+</span>' +
+            '<span>' + t.addHelper + '</span>' +
+          '</button>';
+        re.appendChild(addHelperCell);
+      }
+    });
 
+    // Legacy dept-level helpers (backwards compat — old e-helper- keys)
     if (dept.dynamicHelpers) {
-      var helperKeys = Object.keys(wd).filter(function(k) { return k.indexOf('e-helper-') === 0; });
-      helperKeys.sort();
-      helperKeys.forEach(function(hid) { renderSlotCard(re, hid, dept, wd, t, true); });
-      var addHelperCell = document.createElement('div');
-      addHelperCell.className = 'slot';
-      addHelperCell.style.justifyContent = 'center';
-      addHelperCell.innerHTML =
-        '<button class="add-btn" style="justify-content:center;width:100%;color:#3a3a3a;border:1px dashed #2a2a2a;border-radius:4px;padding:8px" onclick="addDynamicHelper(event)">' +
-          '<span class="plus" style="border-color:#2a2a2a;color:#3a3a3a">+</span>' +
-          '<span>' + t.addHelper + '</span>' +
-        '</button>';
-      re.appendChild(addHelperCell);
+      var deptHelperKeys = Object.keys(wd).filter(function(k) { return k.indexOf('e-helper-') === 0; });
+      deptHelperKeys.sort();
+      deptHelperKeys.forEach(function(hid) { renderSlotCard(re, hid, dept, wd, t, true, null); });
     }
-  });
 
+  }); // end DEPTS.forEach
   var filled = tot - cva;
   var pct = tot > 0 ? Math.round((filled / tot) * 100) : 0;
   document.getElementById('pfill').style.width = pct + '%';
@@ -1019,19 +1026,52 @@ function buildSchedPositions() {
     var selShSh = existShStatus==='shadow'?'s-sh':'';
 
     row.innerHTML =
-      '<div class="sched-pos-title">' + si[0] + (si[1] ? '<div style="font-size:9px;color:#2e2e2e;font-weight:400">' + si[1] + '</div>' : '') + '</div>' +
+      '<div class="sched-pos-title">' + si[0] + (si[1] ? '<div style="font-size:9px;color:#555;font-weight:400">' + si[1] + '</div>' : '') + '</div>' +
       '<input class="sched-pos-input" placeholder="' + t.st.op + '..." id="sp-' + sl.id + '-name" value="' + existName + '" oninput="schedFormData[\'' + sl.id + '\'].primary.name=this.value">' +
       '<div class="sched-status-btns" id="spst-' + sl.id + '">' +
         '<button class="ssbtn ' + selOp + '" onclick="setSchedStatus(\'' + sl.id + '\',\'primary\',\'op\',event)">🟢</button>' +
         '<button class="ssbtn ' + selTr + '" onclick="setSchedStatus(\'' + sl.id + '\',\'primary\',\'train\',event)">🟡</button>' +
         '<button class="ssbtn ' + selSh + '" onclick="setSchedStatus(\'' + sl.id + '\',\'primary\',\'shadow\',event)">🔵</button>' +
       '</div>' +
-      '<input class="sched-pos-input" placeholder="' + t.phShadow + '" id="sp-' + sl.id + '-sh" value="' + existShName + '" style="opacity:0.5" oninput="schedFormData[\'' + sl.id + '\'].secondary.name=this.value">' +
+      '<input class="sched-pos-input" placeholder="' + t.phShadow + '" id="sp-' + sl.id + '-sh" value="' + existShName + '" style="opacity:0.6" oninput="schedFormData[\'' + sl.id + '\'].secondary.name=this.value">' +
       '<div class="sched-status-btns" id="spst-' + sl.id + '-sh">' +
         '<button class="ssbtn ' + selShTr + '" onclick="setSchedStatus(\'' + sl.id + '\',\'secondary\',\'train\',event)">🟡</button>' +
         '<button class="ssbtn ' + selShSh + '" onclick="setSchedStatus(\'' + sl.id + '\',\'secondary\',\'shadow\',event)">🔵</button>' +
       '</div>';
     container.appendChild(row);
+
+    // Add helper rows for dynamicHelpers slots
+    if (sl.dynamicHelpers) {
+      var prefix = sl.id + '-helper-';
+      var helperKeys = Object.keys(wd).filter(function(k) { return k.indexOf(prefix) === 0; });
+      helperKeys.sort();
+      helperKeys.forEach(function(hid) {
+        var hexist = wd[hid] || [];
+        var hName = hexist[0] ? hexist[0].name : '';
+        var hStatus = hexist[0] ? hexist[0].status : 'op';
+        schedFormData[hid] = {primary:{name:hName, status:hStatus}, secondary:{name:'', status:'shadow'}};
+        var hrow = document.createElement('div');
+        hrow.className = 'sched-pos-row';
+        var hSelOp = hStatus==='op'?'s-op':'';
+        var hSelTr = hStatus==='train'?'s-tr':'';
+        var hSelSh = hStatus==='shadow'?'s-sh':'';
+        hrow.innerHTML =
+          '<div class="sched-pos-title" style="color:#888">' + t.helperSlot + '</div>' +
+          '<input class="sched-pos-input" placeholder="' + t.st.op + '..." value="' + hName + '" oninput="schedFormData[\'' + hid + '\'].primary.name=this.value">' +
+          '<div class="sched-status-btns" id="spst-' + hid + '">' +
+            '<button class="ssbtn ' + hSelOp + '" onclick="setSchedStatus(\'' + hid + '\',\'primary\',\'op\',event)">🟢</button>' +
+            '<button class="ssbtn ' + hSelTr + '" onclick="setSchedStatus(\'' + hid + '\',\'primary\',\'train\',event)">🟡</button>' +
+            '<button class="ssbtn ' + hSelSh + '" onclick="setSchedStatus(\'' + hid + '\',\'primary\',\'shadow\',event)">🔵</button>' +
+          '</div>';
+        container.appendChild(hrow);
+      });
+      // Add helper button in the form
+      var addBtn = document.createElement('div');
+      addBtn.className = 'sched-pos-row';
+      addBtn.style.justifyContent = 'flex-start';
+      addBtn.innerHTML = '<button class="add-btn" style="color:#555" onclick="addHelperFromAgenda(\'' + sl.id + '\',\'' + weekKey + '\',event)"><span class="plus" style="border-color:#333">+</span><span>' + t.addHelper + '</span></button>';
+      container.appendChild(addBtn);
+    }
   });
   renderMiniDash();
 }
@@ -1052,6 +1092,17 @@ function setSchedStatus(slotId, role, status, e) {
   });
 }
 
+function addHelperFromAgenda(slotId, weekKey, e) {
+  if (e) e.stopPropagation();
+  if (!data[weekKey]) data[weekKey] = {};
+  var prefix = slotId + '-helper-';
+  var existing = Object.keys(data[weekKey]).filter(function(k) { return k.indexOf(prefix) === 0; });
+  var newId = prefix + existing.length;
+  data[weekKey][newId] = [];
+  persist();
+  buildSchedPositions();
+}
+
 function submitSchedule() {
   var weekKey = document.getElementById('sf-date') ? document.getElementById('sf-date').value : getThisFriday();
   var deptId = document.getElementById('sf-area') ? document.getElementById('sf-area').value : null;
@@ -1063,6 +1114,8 @@ function submitSchedule() {
   statusEl.className = 'submit-status saving';
   statusEl.textContent = t.sfSaving;
   if (!data[weekKey]) data[weekKey] = {};
+
+  // Save all defined slots
   dept.slots.filter(function(sl) { return sl.s <= 2 || !sl.d; }).forEach(function(sl) {
     var sd = schedFormData[sl.id] || {};
     var people = [];
@@ -1070,11 +1123,27 @@ function submitSchedule() {
     if (sd.secondary && sd.secondary.name) people.push({name:sd.secondary.name, status:sd.secondary.status||'shadow'});
     if (people.length) data[weekKey][sl.id] = people;
     else delete data[weekKey][sl.id];
+
+    // Save helper slots
+    if (sl.dynamicHelpers) {
+      var prefix = sl.id + '-helper-';
+      var helperKeys = Object.keys(schedFormData).filter(function(k) { return k.indexOf(prefix) === 0; });
+      helperKeys.forEach(function(hid) {
+        var hsd = schedFormData[hid] || {};
+        var hpeople = [];
+        if (hsd.primary && hsd.primary.name) hpeople.push({name:hsd.primary.name, status:hsd.primary.status||'op'});
+        if (hpeople.length) data[weekKey][hid] = hpeople;
+        else delete data[weekKey][hid];
+      });
+    }
   });
+
   if (leaderName) { if (!data[weekKey]._leaders) data[weekKey]._leaders = {}; data[weekKey]._leaders[deptId] = leaderName; }
   persist();
+  // Update dashboard immediately so changes are visible without reload
+  if (currentView === 'dashboard') renderDashboard();
   statusEl.className = 'submit-status ok';
-  statusEl.textContent = t.sfOk + (BACKEND_READY ? '' : ' (local)');
+  statusEl.textContent = t.sfOk;
   setTimeout(function() { statusEl.textContent = ''; }, 3000);
   renderMiniDash();
 }
