@@ -583,30 +583,31 @@ function pushToBackend() {
 function pullFromBackend() {
   if (!BACKEND_READY) { loadLocal(); renderDashboard(); return; }
   setSyncState('syncing');
-  fetch(SHEET_CSV_URL, {method:'GET',redirect:'follow',mode:'cors'})
-    .then(function(r) { if (!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
-    .then(function(csv) {
-      var rows = csv.trim().split('\n');
-      var lastRow = null;
-      for (var i = rows.length-1; i >= 1; i--) {
-        var cols = parseCSVRow(rows[i]);
-        if (cols[0] && cols[0].trim() === 'FULL_ROSTER') { lastRow = cols; break; }
-      }
-      if (lastRow && lastRow[1]) {
-        try {
-          // Google Sheets sometimes double-encodes quotes — clean before parsing
-          var raw = lastRow[1].trim().replace(/""/g, '"');
-          if (raw.charAt(0) === '"') raw = raw.substring(1);
-          if (raw.charAt(raw.length-1) === '"') raw = raw.substring(0,raw.length-1);
-          raw = raw.replace(/""/g, '"');
-          data = JSON.parse(raw);
-          localStorage.setItem('legacy_v5',JSON.stringify(data));
-        } catch(e) { loadLocal(); }
-      } else { loadLocal(); }
+  fetch(SCRIPT_URL + '?action=getRoster')
+    .then(function(r) { return r.text(); })
+    .then(function(text) {
+      // Clean any double-encoded quotes before parsing
+      var clean = text.trim();
+      // Remove wrapping outer quotes if present
+      if (clean.charAt(0) === '"') clean = clean.slice(1);
+      if (clean.charAt(clean.length-1) === '"') clean = clean.slice(0,-1);
+      // Unescape double-encoded quotes
+      clean = clean.replace(/""/g, '"');
+      try {
+        var json = JSON.parse(clean);
+        if (json && json.data) {
+          data = json.data;
+          localStorage.setItem('legacy_v5', JSON.stringify(data));
+        } else { loadLocal(); }
+      } catch(e) { loadLocal(); }
       setSyncState('synced');
       renderDashboard();
     })
-    .catch(function() { setSyncState('error'); loadLocal(); renderDashboard(); });
+    .catch(function() {
+      setSyncState('error');
+      loadLocal();
+      renderDashboard();
+    });
 }
 function parseCSVRow(row) {
   var result=[],inQuote=false,current='';
