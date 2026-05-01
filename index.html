@@ -593,36 +593,21 @@ function pushToBackend() {
 function pullFromBackend() {
   if (!BACKEND_READY) { loadLocal(); renderDashboard(); return; }
   setSyncState('syncing');
-  fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vROQvydrz2cZLhjyvR3lNehvNLKdBP1xwoCp5HCuJKh8Ma_y44k9zqYWCqYmbwaZi6WTpu1HJM_4Fh3/pub?gid=595093327&single=true&output=csv', {method:'GET',redirect:'follow'})
+  // Use TSV format - tabs never appear in JSON so no encoding conflicts
+  fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vROQvydrz2cZLhjyvR3lNehvNLKdBP1xwoCp5HCuJKh8Ma_y44k9zqYWCqYmbwaZi6WTpu1HJM_4Fh3/pub?gid=595093327&single=true&output=tsv', {method:'GET',redirect:'follow'})
     .then(function(r) { if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
-    .then(function(csv) {
-      var rows = csv.trim().split('\n');
+    .then(function(tsv) {
+      var rows = tsv.trim().split('\n');
       var jsonStr = null;
-      // Find last FULL_ROSTER row — split on first comma only to preserve JSON
       for (var i = rows.length-1; i >= 1; i--) {
-        var row = rows[i];
-        if (row.indexOf('FULL_ROSTER') === 0) {
-          // Split only on the FIRST comma — everything after is the JSON data
-          var firstComma = row.indexOf(',');
-          if (firstComma > -1) {
-            jsonStr = row.substring(firstComma + 1);
-            // Remove the last two fields (updated timestamp) by finding last comma
-            var lastComma = jsonStr.lastIndexOf(',20'); // timestamps start with 20xx
-            if (lastComma > -1) jsonStr = jsonStr.substring(0, lastComma);
-            break;
-          }
+        var cols = rows[i].split('\t');
+        if (cols[0] && cols[0].trim() === 'FULL_ROSTER' && cols[1]) {
+          jsonStr = cols[1].trim();
+          break;
         }
       }
       if (jsonStr) {
         try {
-          // Strip surrounding quotes added by CSV encoding
-          jsonStr = jsonStr.trim();
-          if (jsonStr.charAt(0) === '"') jsonStr = jsonStr.slice(1);
-          if (jsonStr.charAt(jsonStr.length-1) === '"') jsonStr = jsonStr.slice(0,-1);
-          // Unescape doubled quotes from CSV encoding
-          jsonStr = jsonStr.replace(/""/g, '"');
-          // Strip tab prefix if present
-          if (jsonStr.charAt(0) === '\t') jsonStr = jsonStr.slice(1).trim();
           data = JSON.parse(jsonStr);
           localStorage.setItem('legacy_v5', JSON.stringify(data));
         } catch(e) { loadLocal(); }
