@@ -498,8 +498,10 @@ var schedFormData = {};
 function getThisFriday() {
   var d = new Date();
   var day = d.getDay();
-  // Saturday=6: show last Friday. Sun-Fri: show this week's Friday.
-  var diff = (day === 6) ? -1 : (5 - day);
+  var diff;
+  if (day === 6) { diff = -1; }
+  else if (day === 5) { diff = 0; }
+  else { diff = 5 - day; }
   d.setDate(d.getDate() + diff);
   return d.toISOString().split('T')[0];
 }
@@ -511,7 +513,7 @@ function buildFridayList() {
   var fridays = [];
   var today = new Date();
   var day = today.getDay();
-  var diff = (day === 6) ? -1 : (5 - day);
+var diff = (day === 6) ? -1 : (day === 5) ? 0 : (5 - day);
   var thisFri = new Date(today);
   thisFri.setDate(today.getDate() + diff);
   for (var i = -4; i <= 11; i++) {
