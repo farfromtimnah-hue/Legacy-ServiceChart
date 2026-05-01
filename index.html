@@ -583,31 +583,32 @@ function pushToBackend() {
 function pullFromBackend() {
   if (!BACKEND_READY) { loadLocal(); renderDashboard(); return; }
   setSyncState('syncing');
-  fetch(SCRIPT_URL + '?action=getRoster')
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-      // Clean any double-encoded quotes before parsing
-      var clean = text.trim();
-      // Remove wrapping outer quotes if present
-      if (clean.charAt(0) === '"') clean = clean.slice(1);
-      if (clean.charAt(clean.length-1) === '"') clean = clean.slice(0,-1);
-      // Unescape double-encoded quotes
-      clean = clean.replace(/""/g, '"');
-      try {
-        var json = JSON.parse(clean);
-        if (json && json.data) {
-          data = json.data;
+  fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vROQvydrz2cZLhjyvR3lNehvNLKdBP1xwoCp5HCuJKh8Ma_y44k9zqYWCqYmbwaZi6WTpu1HJM_4Fh3/pub?gid=595093327&single=true&output=csv', {method:'GET',redirect:'follow'})
+    .then(function(r) { if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+    .then(function(csv) {
+      var rows = csv.trim().split('\n');
+      var lastRow = null;
+      for (var i = rows.length-1; i >= 1; i--) {
+        var cols = parseCSVRow(rows[i]);
+        if (cols[0] && cols[0].trim() === 'FULL_ROSTER') { lastRow = cols; break; }
+      }
+      if (lastRow && lastRow[1]) {
+        try {
+          // Trim whitespace and tab prefix, unescape any double-quotes
+          var raw = lastRow[1].trim();
+          if (raw.charAt(0) === '\t') raw = raw.substring(1);
+          raw = raw.replace(/""/g, '"');
+          if (raw.charAt(0) === '"') raw = raw.slice(1);
+          if (raw.charAt(raw.length-1) === '"') raw = raw.slice(0,-1);
+          raw = raw.replace(/""/g, '"');
+          data = JSON.parse(raw);
           localStorage.setItem('legacy_v5', JSON.stringify(data));
-        } else { loadLocal(); }
-      } catch(e) { loadLocal(); }
+        } catch(e) { loadLocal(); }
+      } else { loadLocal(); }
       setSyncState('synced');
       renderDashboard();
     })
-    .catch(function() {
-      setSyncState('error');
-      loadLocal();
-      renderDashboard();
-    });
+    .catch(function() { setSyncState('error'); loadLocal(); renderDashboard(); });
 }
 function parseCSVRow(row) {
   var result=[],inQuote=false,current='';
