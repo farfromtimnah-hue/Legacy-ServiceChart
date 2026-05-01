@@ -329,7 +329,7 @@ body{background:#0d0d0d;color:#f0f0f0;font-family:'DM Sans',sans-serif;min-heigh
 
 <script>
 // ══ CONFIG ════════════════════════════════════════════════════
-var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwguvCt9MFjkPjxuI_VpVP0mqO_Q1Bo5XodbdWIteCrm9CQDpsYGsZvC13w4HisYa1A/exec';
+var SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 var BACKEND_READY = true;
 var SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vROQvydrz2cZLhjyvR3lNehvNLKdBP1xwoCp5HCuJKh8Ma_y44k9zqYWCqYmbwaZi6WTpu1HJM_4Fh3/pub?gid=595093327&single=true&output=csv';
 
@@ -369,6 +369,7 @@ var T = {
       'l-elec2':['Guitarra Elétrica 2',''],'l-acoustic':['Violão',''],'l-bgv3':['BCV 3','Back Vocal'],
       'l-bass-b':['Baixo (2°)',''],'l-drums-b':['Bateria (2°)',''],'l-keys-b':['Teclado (2°)',''],'l-wl-b':['Líder de Louvor (2°)',''],
       't-sound':['Engenheiro de Som',''],'t-lights':['Iluminação',''],'t-stream':['Transmissão ao Vivo',''],
+      't-host1':['Apresentador Live 1','YouTube Live'],'t-host2':['Apresentador Live 2','YouTube Live'],
       't-cam1':['Câmera 1','YouTube Live'],'t-cam2':['Câmera 2','YouTube Live'],'t-cam3':['Câmera 3','YouTube Live'],
       't-sound-b':['Som (2°)',''],
       'p-lyrics':['Letras / ProPresenter',''],'p-lyrics-b':['Letras (2°)',''],
@@ -419,6 +420,7 @@ var T = {
       'l-elec2':['Electric Guitar 2',''],'l-acoustic':['Acoustic Guitar',''],'l-bgv3':['BGV 3','Background Vocal'],
       'l-bass-b':['Bass (2nd)',''],'l-drums-b':['Drums (2nd)',''],'l-keys-b':['Keys (2nd)',''],'l-wl-b':['Worship Leader (2nd)',''],
       't-sound':['Sound Engineer',''],'t-lights':['Lights',''],'t-stream':['Stream Operator',''],
+      't-host1':['Live Stream Host 1','YouTube Live'],'t-host2':['Live Stream Host 2','YouTube Live'],
       't-cam1':['Camera 1','YouTube Live'],'t-cam2':['Camera 2','YouTube Live'],'t-cam3':['Camera 3','YouTube Live'],
       't-sound-b':['Sound (2nd)',''],
       'p-lyrics':['Lyrics / ProPresenter',''],'p-lyrics-b':['Lyrics (2nd)',''],
@@ -447,6 +449,7 @@ var DEPTS = [
   ]},
   {id:'tecnico',icon:'🎚',leader:{main:'Nicole',aux:null},slots:[
     {id:'t-sound',s:1},{id:'t-lights',s:1},{id:'t-stream',s:1},
+    {id:'t-host1',s:2,bonus:true},{id:'t-host2',s:2,bonus:true},
     {id:'t-cam1',s:2,bonus:true},{id:'t-cam2',s:2,bonus:true},{id:'t-cam3',s:2,bonus:true},
     {id:'t-sound-b',s:3,d:1},
   ]},
