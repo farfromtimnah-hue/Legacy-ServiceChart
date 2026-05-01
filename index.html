@@ -594,13 +594,14 @@ function pullFromBackend() {
       }
       if (lastRow && lastRow[1]) {
         try {
-          // Trim whitespace and tab prefix, unescape any double-quotes
-          var raw = lastRow[1].trim();
-          if (raw.charAt(0) === '\t') raw = raw.substring(1);
-          raw = raw.replace(/""/g, '"');
+          var raw = lastRow[1];
+          // Google Sheets CSV encoding: strip outer quotes, unescape doubled quotes, strip tab prefix
           if (raw.charAt(0) === '"') raw = raw.slice(1);
           if (raw.charAt(raw.length-1) === '"') raw = raw.slice(0,-1);
           raw = raw.replace(/""/g, '"');
+          raw = raw.trim();
+          if (raw.charAt(0) === '\t') raw = raw.slice(1);
+          raw = raw.trim();
           data = JSON.parse(raw);
           localStorage.setItem('legacy_v5', JSON.stringify(data));
         } catch(e) { loadLocal(); }
