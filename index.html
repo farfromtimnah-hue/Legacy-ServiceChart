@@ -498,28 +498,30 @@ var schedFormData = {};
 function getThisFriday() {
   var d = new Date();
   var day = d.getDay();
-  var diff;
-  if (day === 6) { diff = -1; }
-  else if (day === 5) { diff = 0; }
-  else { diff = 5 - day; }
+  var diff = (day === 6) ? -1 : (day === 5) ? 0 : (5 - day);
   d.setDate(d.getDate() + diff);
-  return d.toISOString().split('T')[0];
+  var m = d.getMonth() + 1;
+  var dd = d.getDate();
+  return d.getFullYear() + '-' + (m < 10 ? '0' + m : m) + '-' + (dd < 10 ? '0' + dd : dd);
 }
 function keyToDisplay(k) {
-  var d = new Date(k + 'T12:00:00');
-  return d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', {month:'short',day:'numeric',year:'numeric'});
+  var parts = k.split('-');
+  var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+  return d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', {month:'short', day:'numeric', year:'numeric'});
 }
-function buildFridayList() {
+  function buildFridayList() {
   var fridays = [];
   var today = new Date();
   var day = today.getDay();
-var diff = (day === 6) ? -1 : (day === 5) ? 0 : (5 - day);
+  var diff = (day === 6) ? -1 : (day === 5) ? 0 : (5 - day);
   var thisFri = new Date(today);
   thisFri.setDate(today.getDate() + diff);
   for (var i = -4; i <= 11; i++) {
     var d = new Date(thisFri);
     d.setDate(thisFri.getDate() + (i * 7));
-    fridays.push(d.toISOString().split('T')[0]);
+    var m = d.getMonth() + 1;
+    var dd = d.getDate();
+    fridays.push(d.getFullYear() + '-' + (m < 10 ? '0' + m : m) + '-' + (dd < 10 ? '0' + dd : dd));
   }
   return fridays;
 }
