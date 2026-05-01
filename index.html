@@ -575,10 +575,20 @@ function setSyncState(s) {
   else { dot.className='sync-dot'; txt.textContent=t.syncLocal; loc.textContent='localStorage'; }
 }
 function pushToBackend() {
-  var payload = encodeURIComponent(JSON.stringify({action:'saveRoster',data:data}));
-  fetch(SCRIPT_URL + '?method=post&payload=' + payload)
-    .then(function() { setSyncState('synced'); })
-    .catch(function() { setSyncState('error'); });
+  var payload = JSON.stringify({action:'saveRoster', data:data});
+  fetch(SCRIPT_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:payload
+  })
+  .then(function() { setSyncState('synced'); })
+  .catch(function() {
+    // Fallback to GET if POST fails
+    var encoded = encodeURIComponent(payload);
+    fetch(SCRIPT_URL + '?method=post&payload=' + encoded)
+      .then(function() { setSyncState('synced'); })
+      .catch(function() { setSyncState('error'); });
+  });
 }
 function pullFromBackend() {
   if (!BACKEND_READY) { loadLocal(); renderDashboard(); return; }
