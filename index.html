@@ -593,16 +593,21 @@ function pushToBackend() {
 function pullFromBackend() {
   if (!BACKEND_READY) { loadLocal(); renderDashboard(); return; }
   setSyncState('syncing');
-  // Use TSV format - tabs never appear in JSON so no encoding conflicts
   fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vROQvydrz2cZLhjyvR3lNehvNLKdBP1xwoCp5HCuJKh8Ma_y44k9zqYWCqYmbwaZi6WTpu1HJM_4Fh3/pub?gid=595093327&single=true&output=tsv', {method:'GET',redirect:'follow'})
     .then(function(r) { if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
     .then(function(tsv) {
       var rows = tsv.trim().split('\n');
       var jsonStr = null;
       for (var i = rows.length-1; i >= 1; i--) {
-        var cols = rows[i].split('\t');
-        if (cols[0] && cols[0].trim() === 'FULL_ROSTER' && cols[1]) {
-          jsonStr = cols[1].trim();
+        var row = rows[i];
+        if (row.indexOf('FULL_ROSTER') === 0) {
+          var firstTab = row.indexOf('\t');
+          var lastTab = row.lastIndexOf('\t');
+          if (firstTab > -1 && lastTab > firstTab) {
+            jsonStr = row.substring(firstTab + 1, lastTab).trim();
+          } else if (firstTab > -1) {
+            jsonStr = row.substring(firstTab + 1).trim();
+          }
           break;
         }
       }
@@ -610,13 +615,25 @@ function pullFromBackend() {
         try {
           data = JSON.parse(jsonStr);
           localStorage.setItem('legacy_v5', JSON.stringify(data));
-        } catch(e) { loadLocal(); }
-      } else { loadLocal(); }
+        } catch(e) {
+          alert('Parse fail: ' + e.message + ' | Start: ' + jsonStr.substring(0,80));
+          loadLocal();
+        }
+      } else {
+        alert('No FULL_ROSTER row found in TSV');
+        loadLocal();
+      }
       setSyncState('synced');
       renderDashboard();
     })
-    .catch(function() { setSyncState('error'); loadLocal(); renderDashboard(); });
+    .catch(function(err) {
+      alert('Fetch error: ' + err.message);
+      setSyncState('error');
+      loadLocal();
+      renderDashboard();
+    });
 }
+
 function parseCSVRow(row) {
   var result=[],inQuote=false,current='';
   for (var i=0;i<row.length;i++) {
